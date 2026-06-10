@@ -59,7 +59,7 @@ Node 18+ Express server exposing the PIIS briefing API. Deployable to **Render**
 
 1. Push the project to GitHub.
 2. Render Dashboard → **New +** → **Blueprint** → connect your repo.
-3. Render detects [`render.yaml`](render.yaml) and proposes the `piis-briefing` web service.
+3. Render detects [`render.yaml`](../../render.yaml) at the repo root and proposes the `piis-briefing` web service. (Render Blueprint only scans the repo root, so the file lives there even though it points at `backend/render/` via `rootDir`.)
 4. After the service is created, open **Environment** and set:
    - `ANTHROPIC_API_KEY` = your `sk-ant-...` key
    - `CORS_ORIGIN` = your Vercel frontend URL (e.g. `https://piis.vercel.app`)
@@ -152,7 +152,7 @@ backend/render/
 ├── server.js          Express app, routes, CORS
 ├── briefing.js        PIIS prompt, schema, Anthropic call (pure module)
 ├── package.json
-├── render.yaml        Render Blueprint config
 ├── .env.example
 └── README.md
+(render.yaml lives at the repo root — Render Blueprint requires that)
 ```

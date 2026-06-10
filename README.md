@@ -46,7 +46,7 @@ piis/
 
 1. Push this repo to GitHub.
 2. [render.com](https://render.com) → **New +** → **Blueprint** → connect your repo.
-3. Render reads [`backend/render/render.yaml`](backend/render/render.yaml) and proposes the `piis-briefing` service.
+3. Render reads [`render.yaml`](render.yaml) at the repo root and proposes the `piis-briefing` service (its `rootDir` points at `backend/render/`).
 4. After service is created, **Environment** → add:
    - `ANTHROPIC_API_KEY` = your `sk-ant-...` key from [console.anthropic.com](https://console.anthropic.com)
    - `CORS_ORIGIN` = leave as `*` for now (tighten after frontend deploys)
@@ -177,6 +177,7 @@ npx serve . -p 5500
 ```
 piis/
 ├── README.md                                this file
+├── render.yaml                              Render Blueprint (root-level so Render auto-detects)
 ├── .gitignore
 ├── frontend/
 │   ├── index.html
@@ -190,7 +191,6 @@ piis/
     │   ├── server.js
     │   ├── briefing.js
     │   ├── package.json
-    │   ├── render.yaml
     │   ├── .env.example
     │   └── README.md
     └── cloudflare/                          ← OR deploy this for Cloudflare Pages
