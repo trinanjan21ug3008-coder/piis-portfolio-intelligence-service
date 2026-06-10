@@ -1,0 +1,12 @@
+name = "piis-briefing"
+compatibility_date = "2024-09-01"
+pages_build_output_dir = "."
+
+# Cloudflare Pages Functions deployment.
+# The function file at functions/api/briefing.js is automatically routed
+# to /api/briefing — no further wiring required.
+#
+# Environment variables (set via Cloudflare dashboard or `wrangler pages secret put`):
+#   ANTHROPIC_API_KEY   (required, secret)
+#   PIIS_MODEL          (optional)  default: claude-sonnet-4-6
+#   PIIS_MAX_SEARCHES   (optional)  default: 6

@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PIIS — Personal Investment Intelligence System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300d4aa' stroke-width='2'%3E%3Cpath d='M3 3v18h18'/%3E%3Cpath d='m19 9-5 5-4-4-3 3'/%3E%3C/svg%3E" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 3v18h18"/>
+          <path d="m19 9-5 5-4-4-3 3"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">PIIS</span>
+        <span class="brand-sub">Investment Intelligence</span>
+      </div>
+    </div>
+    <nav class="nav-tabs" id="nav-tabs" hidden>
+      <button class="nav-tab active" data-view="briefing">
+        <span class="nav-dot" id="briefing-dot" hidden></span>
+        Briefing
+      </button>
+      <button class="nav-tab" data-view="dashboard">Dashboard</button>
+      <button class="nav-tab" data-view="holdings">Holdings</button>
+      <button class="nav-tab" data-view="transactions">Activity</button>
+    </nav>
+    <div class="header-actions">
+      <button id="export-btn" class="icon-btn" title="Export portfolio" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </button>
+      <button id="reset-btn" class="icon-btn" title="Reset portfolio" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+      </button>
+      <button id="theme-toggle" class="icon-btn" title="Toggle theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section id="empty-state" class="empty-state">
+      <div class="empty-bg"></div>
+      <div class="empty-card">
+        <div class="empty-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 3v18h18"/>
+            <path d="m19 9-5 5-4-4-3 3"/>
+          </svg>
+        </div>
+        <h1>Personal Investment Intelligence</h1>
+        <p class="empty-sub">Upload your portfolio to begin. Every morning, your Chief Investment Intelligence Analyst surfaces what changed — and whether it matters to <em>your</em> positions.</p>
+
+        <div class="upload-zone" id="upload-zone">
+          <input type="file" id="file-input" accept=".xlsx,.xls,.csv" hidden />
+          <div class="upload-inner">
+            <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            <div class="upload-text">
+              <strong>Drop your portfolio file</strong>
+              <span>or click to browse · .xlsx, .xls, .csv</span>
+            </div>
+          </div>
+        </div>
+
+        <details class="format-help">
+          <summary>Expected columns</summary>
+          <div class="format-body">
+            <code>Sl. No.</code><code>Name of Stock</code><code>Qty</code><code>Average Price</code><code>Total Value</code><code>Percentage of Portfolio</code><code>Investment Thesis</code>
+            <p>Column names are matched loosely — minor variations are accepted.</p>
+          </div>
+        </details>
+
+        <div class="empty-divider"><span>or</span></div>
+
+        <div class="empty-actions">
+          <button id="load-sample" class="btn-ghost">Load sample portfolio</button>
+          <button id="start-blank" class="btn-link">Start blank</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Briefing -->
+    <section id="view-briefing" class="view" hidden>
+      <div class="view-head">
+        <div>
+          <h2>Daily Intelligence Briefing</h2>
+          <p class="view-sub" id="briefing-meta">Live market intelligence filtered against your holdings.</p>
+        </div>
+        <div class="view-actions">
+          <button class="btn-primary" id="generate-briefing">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/><path d="M21 3v6h-6"/></svg>
+            <span>Generate Today's Briefing</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="briefing-loading" class="briefing-loading" hidden>
+        <div class="loader-orb"><span></span><span></span><span></span></div>
+        <div class="loader-text">
+          <strong id="loader-title">Analyzing markets…</strong>
+          <span id="loader-sub">Pulling live filings, news, and macro data.</span>
+        </div>
+        <div class="loader-bar"><div class="loader-bar-fill" id="loader-bar"></div></div>
+        <div class="loader-stages" id="loader-stages"></div>
+      </div>
+
+      <div id="briefing-error" class="briefing-error" hidden>
+        <div class="error-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="error-body">
+          <strong id="error-title">Couldn't generate briefing</strong>
+          <span id="error-detail"></span>
+          <button class="btn-ghost" id="error-retry">Retry</button>
+        </div>
+      </div>
+
+      <div id="briefing-empty" class="briefing-empty">
+        <div class="briefing-empty-mark">
+          <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="32" cy="32" r="28" stroke-opacity="0.15"/>
+            <circle cx="32" cy="32" r="20" stroke-opacity="0.25"/>
+            <circle cx="32" cy="32" r="12" stroke-opacity="0.4"/>
+            <circle cx="32" cy="32" r="4" fill="currentColor"/>
+          </svg>
+        </div>
+        <h3>No briefing yet for today</h3>
+        <p>Tap <em>Generate Today's Briefing</em> to pull live market intelligence — earnings, filings, regulatory updates, insider activity, macro shifts — filtered against your specific holdings.</p>
+        <p class="briefing-quote">"Do not tell me what happened. Tell me what changed. Do not tell me what changed. Tell me whether it affects my portfolio, watchlist, or investment theses."</p>
+      </div>
+
+      <div id="briefing-content" class="briefing-content" hidden>
+        <!-- Hero overview with impact distribution -->
+        <article class="brief-hero">
+          <div class="brief-hero-grid">
+            <div class="brief-hero-stat">
+              <span class="brief-hero-label">Items Surfaced</span>
+              <span class="brief-hero-value" id="hero-items">—</span>
+            </div>
+            <div class="brief-hero-stat">
+              <span class="brief-hero-label">Holdings Affected</span>
+              <span class="brief-hero-value" id="hero-affected">—</span>
+            </div>
+            <div class="brief-hero-stat">
+              <span class="brief-hero-label">Action Required</span>
+              <span class="brief-hero-value" id="hero-actions">—</span>
+            </div>
+            <div class="brief-hero-stat">
+              <span class="brief-hero-label">Sources Consulted</span>
+              <span class="brief-hero-value" id="hero-sources">—</span>
+            </div>
+          </div>
+          <div class="impact-distribution">
+            <div class="impact-distribution-label">Impact Distribution</div>
+            <div class="impact-bar" id="impact-bar"></div>
+            <div class="impact-legend" id="impact-legend"></div>
+          </div>
+        </article>
+
+        <article class="brief-section" id="sec-exec">
+          <div class="brief-section-head">
+            <span class="brief-num">01</span>
+            <h3>Executive Summary</h3>
+            <span class="brief-sub">Max 7 items · valuation, earnings, risk, positioning</span>
+          </div>
+          <div class="brief-section-body" id="exec-body"></div>
+        </article>
+
+        <article class="brief-section" id="sec-portfolio">
+          <div class="brief-section-head">
+            <span class="brief-num">02</span>
+            <h3>Portfolio Impact Assessment</h3>
+            <span class="brief-sub">Affected holdings only</span>
+          </div>
+          <div class="brief-section-body" id="portfolio-impact-body"></div>
+        </article>
+
+        <article class="brief-section" id="sec-mispricing">
+          <div class="brief-section-head">
+            <span class="brief-num">03</span>
+            <h3>Market-Mispricing Opportunities</h3>
+            <span class="brief-sub">Hidden beneficiaries, losers, second-order effects</span>
+          </div>
+          <div class="brief-section-body" id="mispricing-body"></div>
+        </article>
+
+        <article class="brief-section brief-section-warn" id="sec-disconfirm">
+          <div class="brief-section-head">
+            <span class="brief-num">04</span>
+            <h3>Disconfirming Evidence</h3>
+            <span class="brief-sub">What contradicts your theses</span>
+          </div>
+          <div class="brief-section-body" id="disconfirm-body"></div>
+        </article>
+
+        <article class="brief-section" id="sec-smart">
+          <div class="brief-section-head">
+            <span class="brief-num">05</span>
+            <h3>Smart Money Monitor</h3>
+            <span class="brief-sub">Promoter, insider, institutional positioning</span>
+          </div>
+          <div class="brief-section-body" id="smart-body"></div>
+        </article>
+
+        <article class="brief-section" id="sec-earnings">
+          <div class="brief-section-head">
+            <span class="brief-num">06</span>
+            <h3>Earnings &amp; Filing Radar</h3>
+            <span class="brief-sub">What changed vs previous communication</span>
+          </div>
+          <div class="brief-section-body" id="earnings-body"></div>
+        </article>
+
+        <article class="brief-section" id="sec-risk">
+          <div class="brief-section-head">
+            <span class="brief-num">07</span>
+            <h3>Risk Dashboard</h3>
+            <span class="brief-sub">Unusual developments only</span>
+          </div>
+          <div class="brief-section-body" id="risk-body"></div>
+        </article>
+
+        <article class="brief-section brief-section-accent" id="sec-contrarian">
+          <div class="brief-section-head">
+            <span class="brief-num">08</span>
+            <h3>Contrarian Insight of the Day</h3>
+            <span class="brief-sub">Where consensus may be wrong</span>
+          </div>
+          <div class="brief-section-body" id="contrarian-body"></div>
+        </article>
+
+        <article class="brief-section brief-section-decision" id="sec-decision">
+          <div class="brief-section-head">
+            <span class="brief-num">09</span>
+            <h3>Decision Log</h3>
+            <span class="brief-sub">One-sentence rationale per action</span>
+          </div>
+          <div class="decision-summary">
+            <div class="chart-body" style="height:200px"><canvas id="chart-decisions"></canvas></div>
+          </div>
+          <div class="brief-section-body" id="decision-body"></div>
+        </article>
+
+        <article class="brief-section brief-section-sources" id="sec-sources">
+          <div class="brief-section-head">
+            <span class="brief-num">★</span>
+            <h3>Sources Consulted</h3>
+            <span class="brief-sub">Live citations from this briefing</span>
+          </div>
+          <div class="brief-section-body" id="sources-body"></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Dashboard -->
+    <section id="view-dashboard" class="view" hidden>
+      <div class="view-head">
+        <div>
+          <h2>Dashboard</h2>
+          <p class="view-sub">Portfolio composition, concentration, and conviction at a glance.</p>
+        </div>
+      </div>
+
+      <div class="metric-grid">
+        <div class="metric-card metric-accent">
+          <div class="metric-label">Total Invested</div>
+          <div class="metric-value" id="m-total">—</div>
+          <div class="metric-trend" id="m-total-sub"></div>
+          <div class="metric-glow"></div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Holdings</div>
+          <div class="metric-value" id="m-holdings">—</div>
+          <div class="metric-trend" id="m-holdings-sub"></div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Sectors</div>
+          <div class="metric-value" id="m-sectors">—</div>
+          <div class="metric-trend" id="m-sectors-sub"></div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Largest Position</div>
+          <div class="metric-value" id="m-largest">—</div>
+          <div class="metric-trend" id="m-largest-sub"></div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Top 5 Concentration</div>
+          <div class="metric-value" id="m-concentration">—</div>
+          <div class="metric-trend" id="m-concentration-sub"></div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Avg Position Size</div>
+          <div class="metric-value" id="m-avg">—</div>
+          <div class="metric-trend" id="m-avg-sub"></div>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-card chart-card-lg">
+          <div class="chart-head">
+            <h3>Portfolio Allocation</h3>
+            <span class="chart-sub" id="alloc-sub"></span>
+          </div>
+          <div class="chart-body chart-body-donut">
+            <canvas id="chart-allocation"></canvas>
+            <div class="donut-center" id="donut-center"></div>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-head">
+            <h3>Top Holdings</h3>
+            <span class="chart-sub">By invested value</span>
+          </div>
+          <div class="chart-body"><canvas id="chart-top"></canvas></div>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-card chart-card-lg">
+          <div class="chart-head">
+            <h3>Sector Exposure</h3>
+            <span class="chart-sub">Auto-classified · % of portfolio</span>
+          </div>
+          <div class="chart-body"><canvas id="chart-sectors"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-head">
+            <h3>Diversification Health</h3>
+            <span class="chart-sub">Concentration check</span>
+          </div>
+          <div class="gauge-wrap">
+            <svg class="gauge" viewBox="0 0 200 120">
+              <path class="gauge-track" d="M20,100 A80,80 0 0,1 180,100" />
+              <path class="gauge-fill" id="gauge-fill" d="M20,100 A80,80 0 0,1 180,100" />
+              <circle class="gauge-needle-base" cx="100" cy="100" r="6" />
+              <line class="gauge-needle" id="gauge-needle" x1="100" y1="100" x2="100" y2="30" />
+            </svg>
+            <div class="gauge-label">
+              <span class="gauge-value" id="gauge-value">—</span>
+              <span class="gauge-text" id="gauge-text">—</span>
+            </div>
+            <div class="gauge-scale"><span>Concentrated</span><span>Balanced</span><span>Diffuse</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-card chart-card-lg">
+          <div class="chart-head">
+            <h3>Position Weight Distribution</h3>
+            <span class="chart-sub">% of portfolio per holding</span>
+          </div>
+          <div class="chart-body"><canvas id="chart-weights"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-head">
+            <h3>Thesis Conviction</h3>
+            <span class="chart-sub">Active position confidence</span>
+          </div>
+          <div class="chart-body"><canvas id="chart-conviction"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Holdings -->
+    <section id="view-holdings" class="view" hidden>
+      <div class="view-head">
+        <div>
+          <h2>Holdings</h2>
+          <p class="view-sub">Manage positions and log thesis changes.</p>
+        </div>
+        <div class="view-actions">
+          <div class="search-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input id="holdings-search" type="text" placeholder="Search stocks…" />
+          </div>
+          <button class="btn-primary" id="add-stock-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>New Position</span>
+          </button>
+        </div>
+      </div>
+      <div class="table-card">
+        <table class="holdings-table">
+          <thead>
+            <tr>
+              <th>Stock</th>
+              <th>Sector</th>
+              <th class="num">Qty</th>
+              <th class="num">Avg Price</th>
+              <th class="num">Invested</th>
+              <th class="weight-col">Weight</th>
+              <th>Thesis</th>
+              <th class="actions-col">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="holdings-tbody"></tbody>
+        </table>
+        <div id="holdings-empty" class="table-empty" hidden>No holdings match.</div>
+      </div>
+    </section>
+
+    <!-- Transactions -->
+    <section id="view-transactions" class="view" hidden>
+      <div class="view-head">
+        <div>
+          <h2>Activity Log</h2>
+          <p class="view-sub">Every transaction with its rationale.</p>
+        </div>
+        <div class="view-actions">
+          <div class="filter-group" id="txn-filters">
+            <button class="filter-chip active" data-filter="all">All</button>
+            <button class="filter-chip" data-filter="BUY">Buys</button>
+            <button class="filter-chip" data-filter="SELL">Sells</button>
+            <button class="filter-chip" data-filter="THESIS">Thesis</button>
+          </div>
+        </div>
+      </div>
+      <div class="activity-stats" id="activity-stats"></div>
+      <div class="timeline" id="txn-timeline"></div>
+    </section>
+  </main>
+
+  <!-- Modal: Add Stock -->
+  <div class="modal" id="modal-add" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel">
+      <div class="modal-head">
+        <h3>New Position</h3>
+        <button class="icon-btn" data-close type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <form id="form-add" class="modal-body">
+        <div class="field">
+          <label>Stock Name</label>
+          <input name="name" type="text" required placeholder="e.g. RELIANCE INDUSTRIES" autocomplete="off" />
+        </div>
+        <div class="row-2">
+          <div class="field">
+            <label>Quantity</label>
+            <input name="qty" type="number" min="0.0001" step="any" required placeholder="0" />
+          </div>
+          <div class="field">
+            <label>Average Price (₹)</label>
+            <input name="price" type="number" min="0.01" step="any" required placeholder="0.00" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Investment Thesis <span class="req">required</span></label>
+          <textarea name="thesis" rows="3" required placeholder="Why are you buying this? What is the edge?"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-ghost" data-close>Cancel</button>
+          <button type="submit" class="btn-primary">Add Position</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Buy More -->
+  <div class="modal" id="modal-buy" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel">
+      <div class="modal-head">
+        <h3>Add to Position</h3>
+        <button class="icon-btn" data-close type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <form id="form-buy" class="modal-body">
+        <div class="modal-context" id="buy-context"></div>
+        <div class="row-2">
+          <div class="field">
+            <label>Additional Quantity</label>
+            <input name="qty" type="number" min="0.0001" step="any" required placeholder="0" />
+          </div>
+          <div class="field">
+            <label>Price per share (₹)</label>
+            <input name="price" type="number" min="0.01" step="any" required placeholder="0.00" />
+          </div>
+        </div>
+        <div class="preview" id="buy-preview"></div>
+        <div class="field">
+          <label>Rationale for adding <span class="req">required</span></label>
+          <textarea name="thesis" rows="3" required placeholder="What strengthened your conviction? Catalyst, drawdown, new info?"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-ghost" data-close>Cancel</button>
+          <button type="submit" class="btn-primary">Confirm Buy</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Sell -->
+  <div class="modal" id="modal-sell" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel">
+      <div class="modal-head">
+        <h3>Reduce / Exit Position</h3>
+        <button class="icon-btn" data-close type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <form id="form-sell" class="modal-body">
+        <div class="modal-context" id="sell-context"></div>
+        <div class="row-2">
+          <div class="field">
+            <label>Quantity to Sell</label>
+            <input name="qty" type="number" min="0.0001" step="any" required placeholder="0" />
+          </div>
+          <div class="field">
+            <label>Sell Price (₹)</label>
+            <input name="price" type="number" min="0.01" step="any" required placeholder="0.00" />
+          </div>
+        </div>
+        <div class="quick-sell">
+          <button type="button" data-pct="25">25%</button>
+          <button type="button" data-pct="50">50%</button>
+          <button type="button" data-pct="75">75%</button>
+          <button type="button" data-pct="100">Exit</button>
+        </div>
+        <div class="preview" id="sell-preview"></div>
+        <div class="field">
+          <label>Rationale for selling <span class="req">required</span></label>
+          <textarea name="thesis" rows="3" required placeholder="Thesis broken? Better opportunity? Rebalancing? Be honest."></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-ghost" data-close>Cancel</button>
+          <button type="submit" class="btn-danger">Confirm Sell</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Thesis -->
+  <div class="modal" id="modal-thesis" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel">
+      <div class="modal-head">
+        <h3>Investment Thesis</h3>
+        <button class="icon-btn" data-close type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <form id="form-thesis" class="modal-body">
+        <div class="modal-context" id="thesis-context"></div>
+        <div class="field">
+          <label>Updated Thesis</label>
+          <textarea name="thesis" rows="5" required></textarea>
+        </div>
+        <div class="field">
+          <label>Conviction</label>
+          <div class="conviction-row">
+            <select name="status">
+              <option value="Strengthening">Strengthening</option>
+              <option value="Intact" selected>Intact</option>
+              <option value="Weakening">Weakening</option>
+              <option value="Broken">Broken</option>
+            </select>
+            <div class="range-wrap">
+              <input name="confidence" type="range" min="1" max="10" value="7" />
+              <span class="range-val" id="conf-val">7</span>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label>What changed? <span class="opt">optional</span></label>
+          <textarea name="note" rows="2" placeholder="New evidence, catalyst, or shift in view."></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-ghost" data-close>Cancel</button>
+          <button type="submit" class="btn-primary">Save Thesis</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Confirm -->
+  <div class="modal" id="modal-confirm" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel modal-sm">
+      <div class="modal-head">
+        <h3 id="confirm-title">Confirm</h3>
+        <button class="icon-btn" data-close type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p id="confirm-body" class="confirm-text"></p>
+        <div class="modal-footer">
+          <button type="button" class="btn-ghost" data-close>Cancel</button>
+          <button type="button" class="btn-danger" id="confirm-ok">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
