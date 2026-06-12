@@ -154,7 +154,14 @@
 
   // ---------- Modals ----------
   function openModal(id) {
-    document.getElementById(id).hidden = false;
+    // Single-modal-at-a-time invariant: close any other open modal first.
+    // Prevents stacking + unclickable states if one trigger fires while another modal is open.
+    document.querySelectorAll('.modal').forEach(m => {
+      if (m.id !== id) m.hidden = true;
+    });
+    const target = document.getElementById(id);
+    if (!target) return;
+    target.hidden = false;
     document.body.style.overflow = 'hidden';
     setTimeout(() => {
       const firstInput = document.querySelector('#' + id + ' input, #' + id + ' textarea');
@@ -1291,17 +1298,22 @@
 
     // Reset
     document.getElementById('reset-btn').addEventListener('click', () => {
-      ui.confirmOk.onclick = () => {
-        state.portfolio = [];
-        state.transactions = [];
-        state.briefing = null;
-        try { localStorage.removeItem(STATE_KEY); localStorage.removeItem(BRIEFING_KEY); } catch (e) {}
-        closeModals();
-        renderAll();
-        toast('Portfolio cleared', 'info');
-      };
-      document.getElementById('confirm-title').textContent = 'Reset Portfolio';
-      document.getElementById('confirm-body').textContent = 'This will erase your portfolio, transaction history, and briefing. This cannot be undone.';
+      const confirmOk = ui.confirmOk || document.getElementById('confirm-ok');
+      const titleEl = document.getElementById('confirm-title');
+      const bodyEl = document.getElementById('confirm-body');
+      if (titleEl) titleEl.textContent = 'Reset Portfolio';
+      if (bodyEl) bodyEl.textContent = 'This will erase your portfolio, transaction history, and briefing. This cannot be undone.';
+      if (confirmOk) {
+        confirmOk.onclick = () => {
+          state.portfolio = [];
+          state.transactions = [];
+          state.briefing = null;
+          try { localStorage.removeItem(STATE_KEY); localStorage.removeItem(BRIEFING_KEY); } catch (e) {}
+          closeModals();
+          renderAll();
+          toast('Portfolio cleared', 'info');
+        };
+      }
       openModal('modal-confirm');
     });
 
