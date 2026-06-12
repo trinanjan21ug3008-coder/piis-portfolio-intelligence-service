@@ -69,6 +69,12 @@
 
 /* ---------- Reset & base ---------- */
 *, *::before, *::after { box-sizing: border-box; }
+
+/* Force the [hidden] attribute to actually hide elements. Without this,
+ * `.modal { display: grid }` overrides the browser's default and every
+ * modal renders on initial load, stacking and blocking interaction. */
+[hidden] { display: none !important; }
+
 html, body {
   margin: 0;
   padding: 0;
