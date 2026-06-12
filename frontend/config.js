@@ -17,7 +17,7 @@
  * vercel.json (advanced). For most teams, editing this file before
  * deploy is the simplest path.
  */
-window.PIIS_BRIEFING_ENDPOINT = 'https://CHANGE-ME.onrender.com/api/briefing';
+window.PIIS_BRIEFING_ENDPOINT = 'https://piis-briefing.onrender.com/api/briefing';
 
 // Optional: disable the daily auto-trigger of the briefing on page load.
 // Useful in production if you want users to explicitly press the button.
