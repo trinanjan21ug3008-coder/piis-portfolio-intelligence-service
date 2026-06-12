@@ -154,14 +154,13 @@
 
   // ---------- Modals ----------
   function openModal(id) {
-    // Single-modal-at-a-time invariant: close any other open modal first.
-    // Prevents stacking + unclickable states if one trigger fires while another modal is open.
-    document.querySelectorAll('.modal').forEach(m => {
-      if (m.id !== id) m.hidden = true;
-    });
+    // Single-modal-at-a-time invariant via .is-open class.
+    // We avoid the [hidden] attribute on modals entirely — class-based show/hide
+    // is immune to CSS specificity conflicts.
+    document.querySelectorAll('.modal').forEach(m => m.classList.remove('is-open'));
     const target = document.getElementById(id);
     if (!target) return;
-    target.hidden = false;
+    target.classList.add('is-open');
     document.body.style.overflow = 'hidden';
     setTimeout(() => {
       const firstInput = document.querySelector('#' + id + ' input, #' + id + ' textarea');
@@ -169,7 +168,7 @@
     }, 80);
   }
   function closeModals() {
-    document.querySelectorAll('.modal').forEach(m => m.hidden = true);
+    document.querySelectorAll('.modal').forEach(m => m.classList.remove('is-open'));
     document.body.style.overflow = '';
   }
 
@@ -1570,6 +1569,9 @@
     initTheme();
     load();
     wire();
+
+    // Defensive: ensure no modal is open at startup, regardless of cache state.
+    closeModals();
 
     if (state.portfolio.length) {
       showApp();
